@@ -8,4 +8,4 @@ Black screen is helpful when we need show nothing.
 5. Press "<--"(left arrow) to show the previous color
 
 ### Demo
-[https://shakib04.github.io/blank-screen-project/](https://shakib04.github.io/blank-screen-project/)
+[Live Link](https://shakib04.github.io/interactive-black-screen/)
