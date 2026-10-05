@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Black Screen - Game Edition</title>
+    <title>Minimalist Black Screen & Color Play</title>
 
     <style>
         * {
@@ -22,7 +22,7 @@
             color: #fff;
         }
 
-        /* Main Game Screen Overaly */
+        /* Main Game Screen Overlay */
         .black-screen {
             background-color: rgba(0, 0, 0, 0.95);
             width: 100%;
@@ -32,14 +32,14 @@
             left: 0;
             z-index: 999;
             transition: background-color 0.4s ease-in-out;
-            display: none; /* Hidden by default until game starts */
+            display: none;
         }
 
         .black-screen.active {
             display: block;
         }
 
-        /* Game Style Menu Overlay */
+        /* Minimalistic Single Card Menu Overlay */
         .game-menu-overlay {
             position: fixed;
             top: 0;
@@ -51,26 +51,25 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
             backdrop-filter: blur(10px);
         }
 
         .menu-container {
             text-align: center;
-            max-width: 450px;
+            max-width: 380px;
             width: 90%;
-            background: rgba(25, 25, 25, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 40px 30px;
-            border-radius: 16px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            background: rgba(22, 22, 22, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 24px 20px;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
         }
 
         .game-title {
-            font-size: 28px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            margin-bottom: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 18px;
             background: linear-gradient(45deg, #fff, #aaa);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -79,23 +78,21 @@
         .menu-btn {
             display: block;
             width: 100%;
-            padding: 14px;
-            margin-bottom: 15px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             color: #fff;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .menu-btn:hover {
             background: #fff;
             color: #000;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
         }
 
         .menu-btn.primary {
@@ -108,49 +105,68 @@
             color: #fff;
         }
 
-        /* Settings Panel */
-        .settings-panel, .help-panel {
-            display: none;
-            margin-top: 15px;
-            text-align: left;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 20px;
+        /* Collapsible Panels Style */
+        .collapsible-panel {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            padding: 0 10px;
+            margin-bottom: 10px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+        }
+
+        .collapsible-panel.open {
+            max-height: 120px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        /* Compact Settings Row Inside Panel */
+        .setting-row {
+            display: flex;
+            gap: 8px;
         }
 
         .setting-group {
-            margin-bottom: 15px;
+            flex: 1;
+            text-align: left;
         }
 
         .setting-group label {
             display: block;
-            font-size: 13px;
-            color: #aaa;
-            margin-bottom: 5px;
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 3px;
         }
 
         .setting-group input {
             width: 100%;
-            padding: 8px 12px;
+            padding: 6px 8px;
             background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             color: #fff;
-            border-radius: 6px;
-            font-size: 14px;
+            border-radius: 5px;
+            font-size: 13px;
+            text-align: center;
         }
 
-        /* Help Content Styles */
-        .help-list {
-            font-size: 13px;
-            color: #ccc;
+        /* Help Content Style */
+        .help-content {
+            font-size: 12px;
+            color: #bbb;
+            text-align: left;
             line-height: 1.6;
         }
 
-        .help-list kbd {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 2px 6px;
-            border-radius: 4px;
+        .help-content kbd {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 2px 5px;
+            border-radius: 3px;
             font-family: monospace;
             color: #fff;
+            font-size: 11px;
         }
 
         .hidden {
@@ -161,52 +177,45 @@
 
 <body>
 
-    {/* Game Screen Overlay */}
+    <!-- Game Screen Overlay -->
     <div class="black-screen" id="blackScreen"></div>
 
-    {/* Game Style Main Menu */}
+    <!-- Minimalistic Single Card Menu -->
     <div class="game-menu-overlay" id="gameMenuOverlay">
         <div class="menu-container">
-            <h1 class="game-title">BLACK SCREEN</h1>
+            <h1 class="game-title">MINIMALIST BLACK SCREEN & COLOR PLAY</h1>
 
-            {/* Main Navigation Options */}
-            <div id="mainOptions">
-                <button class="menu-btn primary" onclick="startGame()">▶ Play Game</button>
-                <button class="menu-btn" onclick="startAutoPlayMode()">⚡ Auto Play</button>
-                <button class="menu-btn" onclick="toggleSettings(true)">⚙ Settings</button>
-                <button class="menu-btn" onclick="toggleHelp(true)">❓ Help & Shortcuts</button>
+            <button class="menu-btn primary" id="playResumeBtn" onclick="handlePlayResume()">▶ Play Game</button>
+            <button class="menu-btn" onclick="startAutoPlayMode()">⚡ Auto Play</button>
+            <button class="menu-btn" onclick="newGame()">✨ New Start</button>
+            
+            <!-- Settings Toggle Button -->
+            <button class="menu-btn" onclick="togglePanel('settingsPanel')">⚙️ Settings</button>
+
+            <!-- Collapsible Settings Panel -->
+            <div class="collapsible-panel" id="settingsPanel">
+                <div class="setting-row">
+                    <div class="setting-group">
+                        <label>Interval (s)</label>
+                        <input type="number" id="intervalInput" value="3" min="1" max="60">
+                    </div>
+                    <div class="setting-group">
+                        <label>Iterations</label>
+                        <input type="number" id="iterationsInput" value="10" min="1" max="100">
+                    </div>
+                </div>
             </div>
 
-            {/* Resume Sub-Menu (Shown when exited from full-screen gameplay) */}
-            <div id="resumeOptions" class="hidden">
-                <button class="menu-btn primary" onclick="resumeGame()">🔄 Resume Game</button>
-                <button class="menu-btn" onclick="newGame()">✨ New Start</button>
-                <button class="menu-btn" onclick="showMainOptions()">🏠 Main Menu</button>
-            </div>
+            <!-- Help / Keyboard Shortcuts Toggle Button -->
+            <button class="menu-btn" onclick="togglePanel('helpPanel')">❓ Help & Shortcuts</button>
 
-            {/* Settings Sub-Menu */}
-            <div class="settings-panel" id="settingsPanel">
-                <div class="setting-group">
-                    <label>Auto Play Interval (Seconds)</label>
-                    <input type="number" id="intervalInput" value="3" min="1" max="60">
+            <!-- Collapsible Help Panel -->
+            <div class="collapsible-panel" id="helpPanel">
+                <div class="help-content">
+                    <div>👉 <kbd>→</kbd> Next Color</div>
+                    <div>👉 <kbd>←</kbd> Previous Color</div>
+                    <div>👉 <kbd>F</kbd> Toggle Fullscreen</div>
                 </div>
-                <div class="setting-group">
-                    <label>Auto Play Iterations (Count)</label>
-                    <input type="number" id="iterationsInput" value="10" min="1" max="100">
-                </div>
-                <button class="menu-btn" onclick="toggleSettings(false)">Back</button>
-            </div>
-
-            {/* Help Sub-Menu */}
-            <div class="help-panel" id="helpPanel">
-                <div class="help-list">
-                    <p>👉 Press <kbd>→</kbd> : Next Random Light Color</p>
-                    <p>👉 Press <kbd>←</kbd> : Previous Color (Stack Pop)</p>
-                    <p>👉 Press <kbd>F</kbd> or Double-Click : Toggle Fullscreen</p>
-                    <p>👉 Exit Fullscreen : Opens Game Menu</p>
-                </div>
-                <br>
-                <button class="menu-btn" onclick="toggleHelp(false)">Back</button>
             </div>
         </div>
     </div>
@@ -215,119 +224,73 @@
     <script src="./stack.js"></script>
 
     <script>
-        // Initialize stack to keep track of color history
-        let colors = new Stack();
-        console.error(colors);
-
+        // 1. First, declare all global variables and DOM elements
+        let colors = null;
         let isGameRunning = false;
         let autoPlayIntervalId = null;
+        let count = 0;
 
-        const blackScreen = document.getElementById('blackScreen');
-        const gameMenuOverlay = document.getElementById('gameMenuOverlay');
-        const mainOptions = document.getElementById('mainOptions');
-        const resumeOptions = document.getElementById('resumeOptions');
-        const settingsPanel = document.getElementById('settingsPanel');
-        const helpPanel = document.getElementById('helpPanel');
+        let blackScreen, gameMenuOverlay, playResumeBtn;
 
-        /**
-         * Starts the game, requests full-screen, and hides the menu overlay.
-         */
-        function startGame() {
-            isGameRunning = true;
-            gameMenuOverlay.classList.add('hidden');
-            blackScreen.classList.add('active');
-
-            // Request full screen
-            document.documentElement.requestFullscreen().catch(err => {
-                console.error(`Fullscreen error: ${err.message}`);
-            });
-        }
-
-        /**
-         * Resumes the game from where it was left (after exiting fullscreen).
-         */
-        function resumeGame() {
-            gameMenuOverlay.classList.add('hidden');
-            blackScreen.classList.add('active');
-
-            document.documentElement.requestFullscreen().catch(err => {
-                console.error(`Fullscreen error: ${err.message}`);
-            });
-        }
-
-        /**
-         * Clears stack and starts a fresh game session.
-         */
-        function newGame() {
+        // Ensure DOM is fully loaded before referencing elements and initializing Stack
+        document.addEventListener('DOMContentLoaded', () => {
             colors = new Stack();
-            blackScreen.style.backgroundColor = `rgba(0, 0, 0, 0.95)`;
-            startGame();
-        }
+            blackScreen = document.getElementById('blackScreen');
+            gameMenuOverlay = document.getElementById('gameMenuOverlay');
+            playResumeBtn = document.getElementById('playResumeBtn');
+        });
 
-        /**
-         * Resets state back to initial main menu options.
-         */
-        function showMainOptions() {
-            resumeOptions.classList.add('hidden');
-            mainOptions.classList.remove('hidden');
-        }
-
-        /**
-         * Toggles Settings Panel visibility inside the menu.
-         */
-        function toggleSettings(show) {
-            if (show) {
-                mainOptions.classList.add('hidden');
-                settingsPanel.style.display = 'block';
-            } else {
-                settingsPanel.style.display = 'none';
-                mainOptions.classList.remove('hidden');
+        // 2. Function definitions
+        function togglePanel(panelId) {
+            const panel = document.getElementById(panelId);
+            if (panel) {
+                panel.classList.toggle('open');
             }
         }
 
-        /**
-         * Toggles Help Panel visibility inside the menu.
-         */
-        function toggleHelp(show) {
-            if (show) {
-                mainOptions.classList.add('hidden');
-                helpPanel.style.display = 'block';
-            } else {
-                helpPanel.style.display = 'none';
-                mainOptions.classList.remove('hidden');
-            }
+        function handlePlayResume() {
+            isGameRunning = true;
+            if (gameMenuOverlay) gameMenuOverlay.classList.add('hidden');
+            if (blackScreen) blackScreen.classList.add('active');
+
+            document.documentElement.requestFullscreen().catch(err => {
+                console.error(`Fullscreen error: ${err.message}`);
+            });
         }
 
-        /**
-         * Auto Play Mode: Iterates through colors based on settings and auto exits fullscreen afterwards.
-         */
+        function newGame() {
+            if (typeof Stack !== 'undefined') {
+                colors = new Stack();
+            }
+            if (blackScreen) {
+                blackScreen.style.backgroundColor = `rgba(0, 0, 0, 0.95)`;
+            }
+            handlePlayResume();
+        }
+
         function startAutoPlayMode() {
             let intervalSec = parseInt(document.getElementById('intervalInput').value) || 3;
             let totalIterations = parseInt(document.getElementById('iterationsInput').value) || 10;
             let currentIteration = 0;
 
-            startGame(); // Launch game & fullscreen
+            handlePlayResume();
 
             autoPlayIntervalId = setInterval(() => {
                 if (currentIteration >= totalIterations) {
                     clearInterval(autoPlayIntervalId);
-                    exitGameToMenu(); // Auto exit after iterations complete
+                    exitGameToMenu();
                     return;
                 }
                 
-                // Trigger color change
                 randomLiteColor();
                 const generatedColor = localStorage.getItem('generatedColor');
-                blackScreen.style.backgroundColor = generatedColor;
-                colors.push(generatedColor);
+                if (blackScreen) blackScreen.style.backgroundColor = generatedColor;
+                if (colors) colors.push(generatedColor);
 
                 currentIteration++;
             }, intervalSec * 1000);
         }
 
-        /**
-         * Exits the active game view and brings back the menu with Resume options.
-         */
         function exitGameToMenu() {
             if (autoPlayIntervalId) {
                 clearInterval(autoPlayIntervalId);
@@ -337,24 +300,11 @@
                 document.exitFullscreen().catch(err => console.error(err));
             }
 
-            blackScreen.classList.remove('active');
-            gameMenuOverlay.classList.remove('hidden');
-            mainOptions.classList.add('hidden');
-            resumeOptions.classList.remove('hidden');
+            if (blackScreen) blackScreen.classList.remove('active');
+            if (gameMenuOverlay) gameMenuOverlay.classList.remove('hidden');
+            if (playResumeBtn) playResumeBtn.innerText = "🔄 Resume Game";
         }
 
-        /**
-         * Listen to Fullscreen changes. When user exits fullscreen via ESC or swipe, show game menu.
-         */
-        document.addEventListener('fullscreenchange', function () {
-            if (!document.fullscreenElement && isGameRunning) {
-                exitGameToMenu();
-            }
-        });
-
-        /**
-         * Event Listener: Key 'F' (keyCode 70) or Double Click/Tap for Fullscreen Toggle
-         */
         function toggleFullScreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {
@@ -367,55 +317,6 @@
             }
         }
 
-        document.addEventListener('keydown', function (e) {
-            if (e.keyCode == 70 && isGameRunning) {
-                toggleFullScreen();
-            }
-        });
-
-        // Double click / tap support for full screen toggle
-        document.addEventListener('dblclick', function () {
-            if (isGameRunning) {
-                toggleFullScreen();
-            }
-        });
-
-        /**
-         * Event Listener: Right Arrow Key (keyCode 39) - Next Color
-         */
-        document.addEventListener('keydown', function (e) {
-            if (e.keyCode == 39 && isGameRunning) {
-                randomLiteColor();
-                const generatedColor = localStorage.getItem('generatedColor');
-                blackScreen.style.backgroundColor = generatedColor;
-                colors.push(generatedColor);
-            }
-        });
-
-        /**
-         * Event Listener: Left Arrow Key (keyCode 37) - Previous Color
-         */
-        document.addEventListener('keydown', function (e) {
-            if (e.keyCode == 37 && isGameRunning) {
-                if (colors.isEmpty()) {
-                    blackScreen.style.backgroundColor = `rgba(0, 0, 0, 0.95)`;
-                    return;
-                } else {
-                    colors.pop();
-                    let peekedColor = colors.peek();
-                    if (peekedColor == null) {
-                        peekedColor = `rgba(0, 0, 0, 0.95)`;
-                    }
-                    blackScreen.style.backgroundColor = peekedColor;
-                }
-            }
-        });
-
-        let count = 0;
-
-        /**
-         * Generates a random RGB color and checks if it's light enough using brightness formula.
-         */
         function randomLiteColor() {
             let r = Math.floor(Math.random() * 255);
             let g = Math.floor(Math.random() * 255);
@@ -424,7 +325,6 @@
             
             if (isLiteColor(color)) {
                 if (count > 0) {
-                    console.error(`Attempts taken: ${count}`);
                     count = 0;
                 }
                 localStorage.setItem('generatedColor', color);
@@ -435,9 +335,6 @@
             }
         }
 
-        /**
-         * Calculates perceived brightness of an RGB color using standard YIQ formula.
-         */
         function isLiteColor(color) {
             let rgb = color.replace('rgb(', '').replace(')', '').split(',');
             let r = rgb[0];
@@ -446,6 +343,44 @@
             let brightness = Math.round(((parseInt(r) * 299) + (parseInt(g) * 587) + (parseInt(b) * 114)) / 1000);
             return brightness > 155;
         }
+
+        // 3. Event Listeners
+        document.addEventListener('fullscreenchange', function () {
+            if (!document.fullscreenElement && isGameRunning) {
+                exitGameToMenu();
+            }
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.keyCode == 70 && isGameRunning) {
+                toggleFullScreen();
+            }
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.keyCode == 39 && isGameRunning) {
+                randomLiteColor();
+                const generatedColor = localStorage.getItem('generatedColor');
+                if (blackScreen) blackScreen.style.backgroundColor = generatedColor;
+                if (colors) colors.push(generatedColor);
+            }
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.keyCode == 37 && isGameRunning) {
+                if (!colors || colors.isEmpty()) {
+                    if (blackScreen) blackScreen.style.backgroundColor = `rgba(0, 0, 0, 0.95)`;
+                    return;
+                } else {
+                    colors.pop();
+                    let peekedColor = colors.peek();
+                    if (peekedColor == null) {
+                        peekedColor = `rgba(0, 0, 0, 0.95)`;
+                    }
+                    if (blackScreen) blackScreen.style.backgroundColor = peekedColor;
+                }
+            }
+        });
     </script>
 </body>
 
