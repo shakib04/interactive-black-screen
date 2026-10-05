@@ -5,88 +5,173 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Black Screen</title>
+    <title>Dynamic Black Screen</title>
 
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         .black-screen {
-            background-color: rgba(0, 0, 0, 0.712);
+            background-color: rgba(0, 0, 0, 0.85);
             width: 100%;
             height: 100vh;
             position: fixed;
             top: 0;
             left: 0;
             z-index: 9999;
+            /* Smooth transition for gorgeous color switching */
+            transition: background-color 0.4s ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* UI/UX Instruction Overlay */
+        .instructions {
+            color: rgba(255, 255, 255, 0.6);
+            background: rgba(0, 0, 0, 0.4);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            pointer-events: none;
+            text-align: center;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: opacity 0.5s ease;
+            opacity: 1;
+        }
+
+        .instructions.hidden {
+            opacity: 0;
+        }
+
+        .instructions kbd {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #fff;
+            font-family: monospace;
         }
     </style>
 </head>
 
 <body>
-    <div class="black-screen"></div>
 
+    <div class="black-screen">
+        <div class="instructions" id="instructionsBox">
+            Press <kbd>→</kbd> Next Color | <kbd>←</kbd> Previous Color | <kbd>F</kbd> or Double Tap: Fullscreen
+        </div>
+    </div>
+
+    <!-- External Stack data structure script -->
     <script src="./stack.js"></script>
 
     <script>
-
-        // setInterval(() => {
-        //     // press right arrow key
-        //     const eventRight = new KeyboardEvent('keydown', {
-        //         keyCode: 39
-        //     });
-        //     document.dispatchEvent(eventRight);
-        // }, 2500);
-
-        // use stack data structure to store colors
+        // Initialize stack to keep track of color history
         let colors = new Stack();
         console.error(colors);
 
-        // add event listener for key F
+        // Variable to handle instruction hide timeout
+        let hideTimeout;
+
+        // Function to auto-hide UI instructions after inactivity for better UX
+        function setupUIAutoHide() {
+            const box = document.getElementById('instructionsBox');
+            clearTimeout(hideTimeout);
+            box.classList.remove('hidden');
+            
+            hideTimeout = setTimeout(() => {
+                box.classList.add('hidden');
+            }, 3000); // Hide after 3 seconds
+        }
+
+        // Trigger auto-hide on load
+        setupUIAutoHide();
+        document.addEventListener('mousemove', setupUIAutoHide);
+        document.addEventListener('keydown', setupUIAutoHide);
+
+        /**
+         * Event Listener: Key 'F' (keyCode 70) or Double Click/Tap for Fullscreen Toggle
+         */
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.error(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
         document.addEventListener('keydown', function (e) {
             if (e.keyCode == 70) {
-                // write code open full screen
-                document.documentElement.requestFullscreen();
+                toggleFullScreen();
             }
         });
-        // add event listener for right arrow key
+
+        // Double click / tap support for full screen toggle (Great UX for mobile & mouse users)
+        document.addEventListener('dblclick', function () {
+            toggleFullScreen();
+        });
+
+        /**
+         * Event Listener: Right Arrow Key (keyCode 39)
+         * Generates a new random light color, applies it, and pushes to the stack.
+         */
         document.addEventListener('keydown', function (e) {
             if (e.keyCode == 39) {
-                // change color to random lite color
-                randomLiteColor()
+                randomLiteColor();
                 const generatedColor = localStorage.getItem('generatedColor');
                 document.querySelector('.black-screen').style.backgroundColor = generatedColor;
                 colors.push(generatedColor);
             }
         });
 
-        // add event listener for left arrow key
+        /**
+         * Event Listener: Left Arrow Key (keyCode 37)
+         * Pops from the stack to revert to the previous color.
+         */
         document.addEventListener('keydown', function (e) {
             if (e.keyCode == 37) {
-                // change color to previous colors
                 if (colors.isEmpty()) {
-                    document.querySelector('.black-screen').style.backgroundColor = `rgba(0, 0, 0, 0.712)`;
+                    document.querySelector('.black-screen').style.backgroundColor = `rgba(0, 0, 0, 0.85)`;
                     return;
                 } else {
                     colors.pop();
                     let peekedColor = colors.peek();
                     if (peekedColor == null) {
-                        peekedColor = `rgba(0, 0, 0, 0.712)`;
+                        peekedColor = `rgba(0, 0, 0, 0.85)`;
                     }
                     document.querySelector('.black-screen').style.backgroundColor = peekedColor;
                 }
             }
         });
 
-
         let count = 0;
 
-        // generate random lite color
+        /**
+         * Generates a random RGB color and checks if it's light enough using brightness formula.
+         * Recursively calls itself until a light color is found.
+         */
         function randomLiteColor() {
             let r = Math.floor(Math.random() * 255);
             let g = Math.floor(Math.random() * 255);
             let b = Math.floor(Math.random() * 255);
             let color = `rgb(${r}, ${g}, ${b})`;
+            
             if (isLiteColor(color)) {
                 if (count > 0) {
-                    console.error(`count: ${count}`);
+                    console.error(`Attempts taken: ${count}`);
                     count = 0;
                 }
                 localStorage.setItem('generatedColor', color);
@@ -97,7 +182,10 @@
             }
         }
 
-        // check color is actually lite
+        /**
+         * Calculates perceived brightness of an RGB color using standard YIQ formula.
+         * Returns true if the brightness value is greater than 155 (making it a light color).
+         */
         function isLiteColor(color) {
             let rgb = color.replace('rgb(', '').replace(')', '').split(',');
             let r = rgb[0];
@@ -106,7 +194,6 @@
             let brightness = Math.round(((parseInt(r) * 299) + (parseInt(g) * 587) + (parseInt(b) * 114)) / 1000);
             return brightness > 155;
         }
-
     </script>
 </body>
 
