@@ -20,55 +20,79 @@
         }
 
         .black-screen {
-            background-color: rgba(0, 0, 0, 0.85);
+            background-color: rgba(0, 0, 0, 0.9);
             width: 100%;
             height: 100vh;
             position: fixed;
             top: 0;
             left: 0;
             z-index: 9999;
-            /* Smooth transition for gorgeous color switching */
+            /* Smooth background color transition */
             transition: background-color 0.4s ease-in-out;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            cursor: pointer;
         }
 
-        /* UI/UX Instruction Overlay */
-        .instructions {
-            color: rgba(255, 255, 255, 0.6);
-            background: rgba(0, 0, 0, 0.4);
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 14px;
-            pointer-events: none;
-            text-align: center;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: opacity 0.5s ease;
+        /* Minimal Tour Guide Popup (Disappears after use or timeout) */
+        .tour-guide {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 20, 20, 0.85);
+            color: #f1f1f1;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
             opacity: 1;
         }
 
-        .instructions.hidden {
+        .tour-guide.fade-out {
             opacity: 0;
+            transform: translate(-50%, 20px);
+            pointer-events: none;
         }
 
-        .instructions kbd {
+        .tour-step {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tour-guide kbd {
             background: rgba(255, 255, 255, 0.2);
             padding: 2px 6px;
             border-radius: 4px;
-            color: #fff;
+            font-size: 11px;
             font-family: monospace;
+            color: #fff;
+        }
+
+        .tour-divider {
+            width: 1px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.2);
         }
     </style>
 </head>
 
 <body>
 
-    <div class="black-screen">
-        <div class="instructions" id="instructionsBox">
-            Press <kbd>→</kbd> Next Color | <kbd>←</kbd> Previous Color | <kbd>F</kbd> or Double Tap: Fullscreen
-        </div>
+    <div class="black-screen"></div>
+
+    <!-- Minimalist Tour Guide that vanishes completely to keep screen clean -->
+    <div class="tour-guide" id="tourGuide">
+        <div class="tour-step"><span>👉 <kbd>→</kbd> / <kbd>←</kbd> Colors</span></div>
+        <div class="tour-divider"></div>
+        <div class="tour-step"><span>⚡ Double-Click: Fullscreen</span></div>
     </div>
 
     <!-- External Stack data structure script -->
@@ -79,29 +103,27 @@
         let colors = new Stack();
         console.error(colors);
 
-        // Variable to handle instruction hide timeout
-        let hideTimeout;
+        const tourGuide = document.getElementById('tourGuide');
 
-        // Function to auto-hide UI instructions after inactivity for better UX
-        function setupUIAutoHide() {
-            const box = document.getElementById('instructionsBox');
-            clearTimeout(hideTimeout);
-            box.classList.remove('hidden');
-            
-            hideTimeout = setTimeout(() => {
-                box.classList.add('hidden');
-            }, 3000); // Hide after 3 seconds
+        /**
+         * Function to dismiss the tour guide gracefully
+         */
+        function dismissTour() {
+            if (!tourGuide.classList.contains('fade-out')) {
+                tourGuide.classList.add('fade-out');
+                // Completely remove from DOM after transition
+                setTimeout(() => tourGuide.remove(), 500);
+            }
         }
 
-        // Trigger auto-hide on load
-        setupUIAutoHide();
-        document.addEventListener('mousemove', setupUIAutoHide);
-        document.addEventListener('keydown', setupUIAutoHide);
+        // Auto-dismiss tour guide after 4 seconds so the screen stays pristine
+        let autoDismissTimer = setTimeout(dismissTour, 4000);
 
         /**
          * Event Listener: Key 'F' (keyCode 70) or Double Click/Tap for Fullscreen Toggle
          */
         function toggleFullScreen() {
+            dismissTour();
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {
                     console.error(`Error attempting to enable fullscreen: ${err.message}`);
@@ -119,7 +141,7 @@
             }
         });
 
-        // Double click / tap support for full screen toggle (Great UX for mobile & mouse users)
+        // Double click / tap support for full screen toggle
         document.addEventListener('dblclick', function () {
             toggleFullScreen();
         });
@@ -130,6 +152,7 @@
          */
         document.addEventListener('keydown', function (e) {
             if (e.keyCode == 39) {
+                dismissTour();
                 randomLiteColor();
                 const generatedColor = localStorage.getItem('generatedColor');
                 document.querySelector('.black-screen').style.backgroundColor = generatedColor;
@@ -143,14 +166,15 @@
          */
         document.addEventListener('keydown', function (e) {
             if (e.keyCode == 37) {
+                dismissTour();
                 if (colors.isEmpty()) {
-                    document.querySelector('.black-screen').style.backgroundColor = `rgba(0, 0, 0, 0.85)`;
+                    document.querySelector('.black-screen').style.backgroundColor = `rgba(0, 0, 0, 0.9)`;
                     return;
                 } else {
                     colors.pop();
                     let peekedColor = colors.peek();
                     if (peekedColor == null) {
-                        peekedColor = `rgba(0, 0, 0, 0.85)`;
+                        peekedColor = `rgba(0, 0, 0, 0.9)`;
                     }
                     document.querySelector('.black-screen').style.backgroundColor = peekedColor;
                 }
